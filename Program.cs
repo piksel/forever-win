@@ -15,18 +15,24 @@ namespace forever
 
         static void Main(string[] args)
         {
-            if (args.Length < 1)
+            if (args.Length == 0 || (args.Length & 1)==1)
             {
                 Usage();
                 return;
             }
 
-            string fileName = args[0];
-            string fileArgs = "";
-            for(int i=1;i<args.Length;i++)
-                fileArgs += " "+args[i];
+            string[] fileName = new string[args.Length / 2];
+            string[] fileArgs = new string[args.Length / 2];
 
-            StartAndWatch(fileName, fileArgs);
+            for(int i=0;i<args.Length/2;i++){
+                //fileArgs[i] = args[i*2+1];
+                //fileName[i] = args[i*2];
+                StartAndWatch(args[i*2], args[i*2+1]);
+            }
+
+            //Console.ReadLine(); return;
+
+            //StartAndWatch(fileName[0], fileArgs[0]);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -38,7 +44,7 @@ namespace forever
         static void Usage()
         {
             MessageBox.Show(
-                "usage:\n\nforever <application>",
+                "usage:\n\nforever <application> \"<arguments>\" ",
                 "forever usage",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information,
