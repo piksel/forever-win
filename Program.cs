@@ -11,7 +11,6 @@ namespace forever
     class Program
     {
         public static volatile bool stop = false;
-        public static volatile bool done = false;
 
         static void Main(string[] args)
         {
@@ -25,14 +24,8 @@ namespace forever
             string[] fileArgs = new string[args.Length / 2];
 
             for(int i=0;i<args.Length/2;i++){
-                //fileArgs[i] = args[i*2+1];
-                //fileName[i] = args[i*2];
                 StartAndWatch(args[i*2], args[i*2+1]);
             }
-
-            //Console.ReadLine(); return;
-
-            //StartAndWatch(fileName[0], fileArgs[0]);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -44,7 +37,7 @@ namespace forever
         static void Usage()
         {
             MessageBox.Show(
-                "usage:\n\nforever <application> \"<arguments>\" ",
+                "usage:\n\nforever <application1> \"<arguments1>\" [<application2> \"<arguments2>\"] ..",
                 "forever usage",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information,
@@ -65,7 +58,6 @@ namespace forever
                 while (true)
                 {
                     if (stop) {
-                        done = true;
                         break;
                     }
                     try
@@ -77,7 +69,8 @@ namespace forever
                     catch(Exception x)
                     {
                         MessageBox.Show(
-                            String.Format("Error while running arguments.\n\nError:\n  {0}\nFilename:\n  {1}\nArguments:\n  {2}", x.Message, fileName, fileArgs),
+                            String.Format("Error while running arguments.\n\nError:\n  {0}\nFilename:\n  {1}\nArguments:\n  {2}",
+                                x.Message, fileName, fileArgs),
                             "Error while running arguments",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;

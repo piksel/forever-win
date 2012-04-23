@@ -35,6 +35,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>forever.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -48,11 +51,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>forever.resx</DependentUpon>
     </Compile>
-    <Compile Include="TrayIconContext.cs" />
+    <Compile Include="SysTrayContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="forever.ico" />
     <EmbeddedResource Include="forever.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>forever.Designer.cs</LastGenOutput>

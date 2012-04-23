@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("forever")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("process alive-keeper")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("piksel bitworks")]
 [assembly: AssemblyProduct("forever")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCopyright("copyright © 2012 piksel bitworks")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
