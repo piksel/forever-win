@@ -5,27 +5,35 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
 using System.Drawing;
+using System.IO;
 
 namespace forever
 {
-    class Program
+    static class Program
     {
+
         public static volatile bool stop = false;
 
         static void Main(string[] args)
         {
-            if (args.Length == 0 || (args.Length & 1)==1)
+            if (args.Length == 0)
             {
-                Usage();
+                MessageBox.Show("Drop a CSV file on the executable to launch. Each line should be formatted accordingly:\n" +
+                                "<application>, <argument>,");
                 return;
             }
+            StreamReader sr = new StreamReader(@args[0]);
+            string strline = "";
+            string[] values = null;
 
-            string[] fileName = new string[args.Length / 2];
-            string[] fileArgs = new string[args.Length / 2];
-
-            for(int i=0;i<args.Length/2;i++){
-                StartAndWatch(args[i*2], args[i*2+1]);
+            while (!sr.EndOfStream)
+            {
+                strline = sr.ReadLine();
+                values = strline.Split(',');
+                startKeepAlive(values[0], values[1]);
             }
+            sr.Close();
+
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -33,19 +41,7 @@ namespace forever
             Application.Run(stContext);
 
         }
-
-        static void Usage()
-        {
-            MessageBox.Show(
-                "usage:\n\nforever <application1> \"<arguments1>\" [<application2> \"<arguments2>\"] ..",
-                "forever usage",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information,
-                MessageBoxDefaultButton.Button1                
-            );
-        }
-
-        static void StartAndWatch(string fileName, string fileArgs)
+        static void startKeepAlive(string fileName, string fileArgs)
         {
             new Thread(delegate()
             {
@@ -57,7 +53,8 @@ namespace forever
 
                 while (true)
                 {
-                    if (stop) {
+                    if (stop)
+                    {
                         break;
                     }
                     try
@@ -66,7 +63,7 @@ namespace forever
                         var p = Process.Start(psi);
                         p.WaitForExit();
                     }
-                    catch(Exception x)
+                    catch (Exception x)
                     {
                         MessageBox.Show(
                             String.Format("Error while running arguments.\n\nError:\n  {0}\nFilename:\n  {1}\nArguments:\n  {2}",
@@ -78,5 +75,9 @@ namespace forever
                 }
             }).Start();
         }
+
     }
+
+
+
 }
