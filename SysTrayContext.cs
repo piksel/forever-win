@@ -12,6 +12,7 @@ namespace forever
         private NotifyIcon notifyIcon;
         private ContextMenuStrip contextMenu;
         private ToolStripMenuItem menuItemExit;
+        private Timer timer;
 
         public SysTrayContext()
         {
@@ -33,6 +34,16 @@ namespace forever
             menuItemExit.Text = "Exit";
             menuItemExit.Click += new EventHandler(menuItemExit_Click);
             contextMenu.Items.Add(menuItemExit);
+
+            timer = new Timer(this.container);
+            timer.Interval = 1000;
+            timer.Tick += new EventHandler(timer_Tick);
+            timer.Start();
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            if (!Program.WatchersRunning) ExitThreadCore();
         }
 
         void menuItemExit_Click(object sender, EventArgs e)

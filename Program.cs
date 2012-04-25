@@ -8,9 +8,20 @@ using System.Drawing;
 
 namespace forever
 {
+
     class Program
     {
         public static volatile bool stop = false;
+
+        public static Thread[] runningWatchers;
+
+        public static bool WatchersRunning{
+            get {
+                foreach (Thread t in runningWatchers)
+                    if (t.IsAlive) return true;
+                return false;
+            }
+        }
 
         static void Main(string[] args)
         {
@@ -20,11 +31,10 @@ namespace forever
                 return;
             }
 
-            string[] fileName = new string[args.Length / 2];
-            string[] fileArgs = new string[args.Length / 2];
+            runningWatchers = new Thread[args.Length / 2];
 
             for(int i=0;i<args.Length/2;i++){
-                StartAndWatch(args[i*2], args[i*2+1]);
+                StartAndWatch(args[i*2], args[i*2+1], ref runningWatchers[i]);
             }
 
             Application.EnableVisualStyles();
@@ -45,9 +55,9 @@ namespace forever
             );
         }
 
-        static void StartAndWatch(string fileName, string fileArgs)
+        static void StartAndWatch(string fileName, string fileArgs, ref Thread thread)
         {
-            new Thread(delegate()
+            thread = new Thread(delegate()
             {
                 var psi = new ProcessStartInfo
                 {
@@ -55,14 +65,39 @@ namespace forever
                     Arguments = fileArgs
                 };
 
+                int runsPerSecond = 0;
+                var rpsStowwatch = Stopwatch.StartNew();
+
                 while (true)
                 {
-                    if (stop) {
+                    if (stop)
+                    {
                         break;
+                    }
+                    if (runsPerSecond > 10)
+                    {
+                        if (MessageBox.Show(
+                            String.Format("The process '{0}' with the arguments '{1}' got restarted more than 10 times in one second.\n"+
+                            "This tends to be a unwanted behavior.\n\nIf you press cancel the other processes will continue to be watched.",fileName,fileArgs),
+                            "something is not right",
+                            MessageBoxButtons.RetryCancel,
+                            MessageBoxIcon.Error) == DialogResult.Retry)
+                        {
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                     try
                     {
                         if (System.Environment.HasShutdownStarted) break;
+                        if (rpsStowwatch.ElapsedMilliseconds > 1000)
+                        {
+                            rpsStowwatch.Reset();
+                            runsPerSecond = 0;
+                        }
+                        runsPerSecond++;
                         var p = Process.Start(psi);
                         p.WaitForExit();
                     }
@@ -76,7 +111,8 @@ namespace forever
                         break;
                     }
                 }
-            }).Start();
+            });
+            thread.Start();
         }
     }
 }
