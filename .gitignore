@@ -1,2 +1,9 @@
 bin
 obj
+Release
+Debug
+CrashTest.vcxproj
+ipch
+*.sdf
+*.opensdf
+*.py
