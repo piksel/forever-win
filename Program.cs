@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
 using System.Drawing;
+using System.Runtime.InteropServices;
 
 namespace forever
 {
@@ -62,7 +63,11 @@ namespace forever
                 var psi = new ProcessStartInfo
                 {
                     FileName = fileName,
-                    Arguments = fileArgs
+                    Arguments = fileArgs,
+                    CreateNoWindow = true, 
+                    ErrorDialog = false,
+                    UseShellExecute = false
+
                 };
 
                 int runsPerSecond = 0;
@@ -98,7 +103,9 @@ namespace forever
                             runsPerSecond = 0;
                         }
                         runsPerSecond++;
+                        int oldMode = SetErrorMode(3);
                         var p = Process.Start(psi);
+                        SetErrorMode(oldMode);
                         p.WaitForExit();
                     }
                     catch(Exception x)
@@ -114,5 +121,8 @@ namespace forever
             });
             thread.Start();
         }
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern int SetErrorMode(int wMode);
     }
 }
